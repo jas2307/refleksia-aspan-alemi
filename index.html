@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>«Аспан әлемі» рефлексиясы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --qazaqstan-blue: #003366;
+            --qazaqstan-gold: #FFD700;
+            --qazaqstan-cyan: #00e5ff;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #000814;
+            color: white;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+        }
+
+        /* Анимацияланған неонды сызықтар */
+        .background-lines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, var(--qazaqstan-cyan), transparent);
+            height: 2px;
+            width: 200px;
+            opacity: 0.3;
+            animation: moveLine 10s linear infinite;
+        }
+
+        @keyframes moveLine {
+            0% { transform: translateX(-200px) translateY(0) rotate(45deg); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translateX(120vw) translateY(100vh) rotate(45deg); opacity: 0; }
+        }
+
+        .corner-label {
+            position: absolute;
+            top: 20px;
+            left: -10px;
+            background: linear-gradient(90deg, var(--qazaqstan-gold), #b8860b);
+            color: #000;
+            padding: 5px 30px;
+            font-weight: 900;
+            font-size: 12px;
+            letter-spacing: 2px;
+            transform: skewX(-20deg);
+            box-shadow: 0 0 15px var(--qazaqstan-gold);
+            z-index: 50;
+        }
+
+        .futuristic-card {
+            background: rgba(0, 20, 40, 0.85);
+            backdrop-filter: blur(25px);
+            border: 2px solid rgba(0, 229, 255, 0.3);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .status-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .status-box:hover {
+            transform: scale(1.05) translateZ(20px);
+            border-color: var(--qazaqstan-gold);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+        }
+
+        .chart-bar {
+            width: 50px;
+            transition: height 1s ease-out;
+            position: relative;
+            box-shadow: 0 0 15px currentColor;
+        }
+
+        .btn-action {
+            background: linear-gradient(90deg, #003366, #00e5ff);
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .btn-action:hover {
+            filter: brightness(1.2);
+            letter-spacing: 2px;
+        }
+
+        /* Слайд анимациясы */
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <!-- Фондағы неон сызықтар -->
+    <div class="background-lines" id="bg-lines"></div>
+
+    <div class="corner-label">РЕФЛЕКСИЯ</div>
+
+    <div id="app" class="w-full max-w-4xl p-8 futuristic-card mx-4">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-black italic tracking-tighter">АСПАН <span class="text-cyan-400">ӘЛЕМІ</span></h1>
+            <div class="flex justify-center items-center space-x-2 mt-2">
+                <div class="h-[1px] w-12 bg-cyan-500"></div>
+                <p class="text-[10px] uppercase tracking-[0.4em] text-cyan-500">Интерактивті табло</p>
+                <div class="h-[1px] w-12 bg-cyan-500"></div>
+            </div>
+        </div>
+
+        <!-- Step 1: Login -->
+        <div id="step-login" class="fade-in space-y-6">
+            <div class="text-center space-y-2">
+                <p class="text-blue-200 text-sm">ОҚУШЫЛАР КЕЗЕГІ: <span id="student-counter" class="text-yellow-400 font-bold">0</span></p>
+            </div>
+            <input type="text" id="student-name" placeholder="ЕСІМІҢІЗДІ ЖАЗЫҢЫЗ" 
+                   class="w-full bg-black/50 border-2 border-cyan-900 p-5 text-center text-2xl font-bold focus:outline-none focus:border-cyan-400 transition-all">
+            <button onclick="startReflection()" class="w-full py-5 btn-action rounded">ТАҢДАУҒА ӨТУ</button>
+        </div>
+
+        <!-- Step 2: Selection -->
+        <div id="step-select" class="hidden fade-in space-y-8">
+            <h2 class="text-center text-xl font-bold">СӘЛЕМ, <span id="display-name" class="text-yellow-400"></span>! КҮЙІҢДІ ТАҢДА:</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div onclick="selectStatus('sun')" class="status-box p-8 cursor-pointer text-center group rounded-xl">
+                    <div class="text-7xl mb-4 group-hover:rotate-12 transition-transform">☀️</div>
+                    <h3 class="font-black text-yellow-400 italic">КҮН</h3>
+                    <p class="text-[10px] mt-2 text-gray-400 italic">БӘРІ ТҮСІНІКТІ</p>
+                </div>
+                <div onclick="selectStatus('cloud')" class="status-box p-8 cursor-pointer text-center group rounded-xl">
+                    <div class="text-7xl mb-4 group-hover:scale-110 transition-transform">☁️</div>
+                    <h3 class="font-black text-gray-300 italic">БҰЛТ</h3>
+                    <p class="text-[10px] mt-2 text-gray-400 italic">ОЙЛАНДЫРДЫ</p>
+                </div>
+                <div onclick="selectStatus('rain')" class="status-box p-8 cursor-pointer text-center group rounded-xl">
+                    <div class="text-7xl mb-4 group-hover:-translate-y-2 transition-transform">💧</div>
+                    <h3 class="font-black text-cyan-400 italic">ЖАҢБЫР</h3>
+                    <p class="text-[10px] mt-2 text-gray-400 italic">ТҮСІНІКСІЗ</p>
+                </div>
+            </div>
+
+            <div id="comment-area" class="hidden space-y-4">
+                <textarea id="additional-info" placeholder="Қай тапсырма қиын болды? (жазбауға да болады)" 
+                          class="w-full bg-black/40 border border-cyan-900 p-4 text-sm focus:outline-none focus:border-cyan-500 h-20"></textarea>
+                <button onclick="submitReflection()" class="w-full py-4 bg-white text-black font-black uppercase tracking-widest text-xs">ДЕРЕКТІ САҚТАУ</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Result & Next -->
+        <div id="step-results" class="hidden fade-in space-y-8">
+            <div class="grid grid-cols-2 gap-8">
+                <!-- Diagram -->
+                <div class="bg-black/30 p-6 rounded-lg border border-white/5">
+                    <div class="flex items-end justify-around h-40 space-x-2">
+                        <div class="flex flex-col items-center flex-1">
+                            <span id="count-sun" class="text-xs font-bold text-yellow-400">0</span>
+                            <div id="bar-sun" class="chart-bar bg-yellow-400" style="height: 0%"></div>
+                            <span class="text-[8px] mt-2 uppercase">КҮН</span>
+                        </div>
+                        <div class="flex flex-col items-center flex-1">
+                            <span id="count-cloud" class="text-xs font-bold text-gray-300">0</span>
+                            <div id="bar-cloud" class="chart-bar bg-gray-400" style="height: 0%"></div>
+                            <span class="text-[8px] mt-2 uppercase">БҰЛТ</span>
+                        </div>
+                        <div class="flex flex-col items-center flex-1">
+                            <span id="count-rain" class="text-xs font-bold text-cyan-400">0</span>
+                            <div id="bar-rain" class="chart-bar bg-cyan-400" style="height: 0%"></div>
+                            <span class="text-[8px] mt-2 uppercase">ЖАҢБЫР</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Last entries -->
+                <div class="space-y-3">
+                    <h3 class="text-[10px] text-cyan-500 font-bold uppercase tracking-widest">СОҢҒЫ ТІЗІМ:</h3>
+                    <div id="results-list" class="max-h-40 overflow-y-auto space-y-2 text-[11px] pr-2"></div>
+                </div>
+            </div>
+
+            <div class="flex space-x-4">
+                <button onclick="nextStudent()" class="flex-1 py-4 btn-action rounded text-sm">КЕЛЕСІ ОҚУШЫ ➜</button>
+                <button onclick="resetApp()" class="px-6 py-4 bg-red-900/20 text-red-500 border border-red-900/50 text-[10px] font-bold uppercase rounded">ТАЗАРТУ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Аудио файлдар (синтетикалық дыбыстар) -->
+    <audio id="snd-sun" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+    <audio id="snd-cloud" src="https://assets.mixkit.co/active_storage/sfx/2014/2014-preview.mp3"></audio>
+    <audio id="snd-rain" src="https://assets.mixkit.co/active_storage/sfx/2526/2526-preview.mp3"></audio>
+
+    <script>
+        let currentData = { name: '', status: '', info: '' };
+        let allResults = JSON.parse(localStorage.getItem('sky_reflection_data')) || [];
+
+        // Неонды сызықтарды генерациялау
+        function createLines() {
+            const container = document.getElementById('bg-lines');
+            for (let i = 0; i < 15; i++) {
+                const line = document.createElement('div');
+                line.className = 'line';
+                line.style.left = Math.random() * 100 + 'vw';
+                line.style.top = Math.random() * 100 + 'vh';
+                line.style.animationDelay = Math.random() * 10 + 's';
+                line.style.width = (Math.random() * 300 + 100) + 'px';
+                container.appendChild(line);
+            }
+        }
+        createLines();
+
+        function updateCounter() {
+            document.getElementById('student-counter').innerText = allResults.length;
+        }
+        updateCounter();
+
+        function startReflection() {
+            const name = document.getElementById('student-name').value.trim();
+            if (!name) return;
+            currentData.name = name;
+            document.getElementById('display-name').innerText = name;
+            document.getElementById('step-login').classList.add('hidden');
+            document.getElementById('step-select').classList.remove('hidden');
+        }
+
+        function selectStatus(status) {
+            currentData.status = status;
+            
+            // Дыбыс ойнату
+            const sound = document.getElementById('snd-' + status);
+            if(sound) { sound.currentTime = 0; sound.play(); }
+
+            if (status === 'sun') {
+                submitReflection();
+            } else {
+                document.getElementById('comment-area').classList.remove('hidden');
+            }
+        }
+
+        function submitReflection() {
+            currentData.info = document.getElementById('additional-info').value.trim();
+            allResults.push({...currentData});
+            localStorage.setItem('sky_reflection_data', JSON.stringify(allResults));
+            showResults();
+        }
+
+        function showResults() {
+            document.getElementById('step-select').classList.add('hidden');
+            document.getElementById('step-results').classList.remove('hidden');
+
+            const counts = { sun: 0, cloud: 0, rain: 0 };
+            const listEl = document.getElementById('results-list');
+            listEl.innerHTML = '';
+
+            allResults.forEach(res => {
+                counts[res.status]++;
+                const div = document.createElement('div');
+                div.className = "bg-white/5 p-2 flex justify-between items-center border-l-2 " + 
+                                (res.status === 'sun' ? 'border-yellow-400' : (res.status === 'cloud' ? 'border-gray-400' : 'border-cyan-400'));
+                
+                const emoji = res.status === 'sun' ? '☀️' : (res.status === 'cloud' ? '☁️' : '💧');
+                div.innerHTML = `<span><strong>${res.name}</strong></span><span>${emoji}</span>`;
+                listEl.prepend(div);
+            });
+
+            const total = allResults.length;
+            setTimeout(() => {
+                ['sun', 'cloud', 'rain'].forEach(key => {
+                    const percentage = total > 0 ? (counts[key] / total) * 100 : 0;
+                    document.getElementById(`count-${key}`).innerText = counts[key];
+                    document.getElementById(`bar-${key}`).style.height = percentage + '%';
+                });
+            }, 100);
+        }
+
+        function nextStudent() {
+            currentData = { name: '', status: '', info: '' };
+            document.getElementById('student-name').value = '';
+            document.getElementById('additional-info').value = '';
+            document.getElementById('comment-area').classList.add('hidden');
+            document.getElementById('step-results').classList.add('hidden');
+            document.getElementById('step-login').classList.remove('hidden');
+            updateCounter();
+        }
+
+        function resetApp() {
+            if(confirm("Барлық нәтижелерді жойып, жаңадан бастауды растайсыз ба?")) {
+                localStorage.removeItem('sky_reflection_data');
+                allResults = [];
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
